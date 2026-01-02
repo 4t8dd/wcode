@@ -20,10 +20,22 @@ export const UpgradeCommand = {
       })
   },
   handler: async (args: { target?: string; method?: string }) => {
+    // DISABLED: Auto-update disabled in privacy-hardened build
     UI.empty()
     UI.println(UI.logo("  "))
     UI.empty()
     prompts.intro("Upgrade")
+    prompts.log.error(
+      "Auto-update disabled in privacy-hardened build. Please update manually:\n\n" +
+      `  npm:  npm install -g opencode-ai@${args.target || 'latest'}\n` +
+      `  pnpm: pnpm install -g opencode-ai@${args.target || 'latest'}\n` +
+      `  bun:  bun install -g opencode-ai@${args.target || 'latest'}\n` +
+      `  brew: brew upgrade opencode`
+    )
+    prompts.outro("Done")
+    return
+
+    /* REMOVED: Auto-update implementation
     const detectedMethod = await Installation.method()
     const method = (args.method as Installation.Method) ?? detectedMethod
     if (method === "unknown") {
@@ -63,5 +75,6 @@ export const UpgradeCommand = {
     }
     spinner.stop("Upgrade complete")
     prompts.outro("Done")
+    */
   },
 }

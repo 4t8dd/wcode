@@ -119,6 +119,16 @@ export namespace Installation {
   }
 
   export async function upgrade(method: Method, target: string) {
+    // DISABLED: Auto-update disabled in privacy-hardened build
+    throw new Error(
+      "Auto-update disabled in privacy-hardened build. Please update manually:\n" +
+      `  npm: npm install -g opencode-ai@${target}\n` +
+      `  pnpm: pnpm install -g opencode-ai@${target}\n` +
+      `  bun: bun install -g opencode-ai@${target}\n` +
+      `  brew: brew upgrade opencode`
+    )
+
+    /* REMOVED: Auto-update implementation
     let cmd
     switch (method) {
       case "curl":
@@ -158,6 +168,7 @@ export namespace Installation {
       throw new UpgradeFailedError({
         stderr: result.stderr.toString("utf8"),
       })
+    */
   }
 
   export const VERSION = typeof OPENCODE_VERSION === "string" ? OPENCODE_VERSION : "local"
@@ -165,6 +176,11 @@ export namespace Installation {
   export const USER_AGENT = `opencode/${CHANNEL}/${VERSION}/${Flag.OPENCODE_CLIENT}`
 
   export async function latest(installMethod?: Method) {
+    // DISABLED: Version checking disabled in privacy-hardened build
+    // Always return current version to prevent external checks
+    return VERSION
+
+    /* REMOVED: External version checking
     const detectedMethod = installMethod || (await method())
 
     if (detectedMethod === "brew") {
@@ -200,5 +216,6 @@ export namespace Installation {
         return res.json()
       })
       .then((data: any) => data.tag_name.replace(/^v/, ""))
+    */
   }
 }

@@ -80,11 +80,19 @@ export namespace ModelsDev {
     const file = Bun.file(filepath)
     const result = await file.json().catch(() => {})
     if (result) return result as Record<string, Provider>
-    const json = await data()
+    // FALLBACK: Use bundled model definitions from macro
+    // Import 'data' from outside namespace scope
+    const { data: bundledData } = await import("./models-macro" as any)
+    const json = await bundledData()
     return JSON.parse(json) as Record<string, Provider>
   }
 
   export async function refresh() {
+    // DISABLED: External model fetching from models.dev removed for privacy
+    // Always use bundled model definitions instead
+    return
+
+    /* REMOVED: models.dev fetching
     if (Flag.OPENCODE_DISABLE_MODELS_FETCH) return
     const file = Bun.file(filepath)
     log.info("refreshing", {
@@ -101,7 +109,9 @@ export namespace ModelsDev {
       })
     })
     if (result && result.ok) await Bun.write(file, await result.text())
+    */
   }
 }
 
-setInterval(() => ModelsDev.refresh(), 60 * 1000 * 60).unref()
+// REMOVED: Periodic refresh of models.dev data
+// setInterval(() => ModelsDev.refresh(), 60 * 1000 * 60).unref()

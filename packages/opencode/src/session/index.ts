@@ -219,6 +219,10 @@ export namespace Session {
   })
 
   export const share = fn(Identifier.schema("session"), async (id) => {
+    // REMOVED: Share feature disabled in privacy-hardened build
+    throw new Error("Share feature disabled in privacy-hardened build")
+
+    /* REMOVED: Share implementation
     const cfg = await Config.get()
     if (cfg.share === "disabled") {
       throw new Error("Sharing is disabled in configuration")
@@ -231,15 +235,21 @@ export namespace Session {
       }
     })
     return share
+    */
   })
 
   export const unshare = fn(Identifier.schema("session"), async (id) => {
+    // REMOVED: Share feature disabled in privacy-hardened build
+    throw new Error("Share feature disabled in privacy-hardened build")
+
+    /* REMOVED: Unshare implementation
     // Use ShareNext to remove the share (same as share function uses ShareNext to create)
     const { ShareNext } = await import("@/share/share-next")
     await ShareNext.remove(id)
     await update(id, (draft) => {
       draft.share = undefined
     })
+    */
   })
 
   export async function update(id: string, editor: (session: Info) => void) {

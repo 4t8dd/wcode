@@ -19,7 +19,7 @@ import path from "path"
 import { type ToolDefinition } from "@opencode-ai/plugin"
 import z from "zod"
 import { Plugin } from "../plugin"
-import { WebSearchTool } from "./websearch"
+// REMOVED: WebSearchTool - Exa web search service removed for privacy
 import { CodeSearchTool } from "./codesearch"
 import { Flag } from "@/flag/flag"
 import { Log } from "@/util/log"
@@ -101,7 +101,7 @@ export namespace ToolRegistry {
       WebFetchTool,
       TodoWriteTool,
       TodoReadTool,
-      WebSearchTool,
+      // REMOVED: WebSearchTool - Exa web search service removed for privacy
       CodeSearchTool,
       SkillTool,
       ...(Flag.OPENCODE_EXPERIMENTAL_LSP_TOOL ? [LspTool] : []),
@@ -119,8 +119,8 @@ export namespace ToolRegistry {
     const result = await Promise.all(
       tools
         .filter((t) => {
-          // Enable websearch/codesearch for zen users OR via enable flag
-          if (t.id === "codesearch" || t.id === "websearch") {
+          // Enable codesearch for zen users OR via enable flag
+          if (t.id === "codesearch") {
             return providerID === "opencode" || Flag.OPENCODE_ENABLE_EXA
           }
           return true
@@ -149,7 +149,7 @@ export namespace ToolRegistry {
     if (agent.permission.webfetch === "deny") {
       result["webfetch"] = false
       result["codesearch"] = false
-      result["websearch"] = false
+      // REMOVED: websearch tool no longer exists
     }
     // Disable skill tool if all skills are denied
     if (agent.permission.skill["*"] === "deny" && Object.keys(agent.permission.skill).length === 1) {

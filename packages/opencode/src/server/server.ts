@@ -974,35 +974,21 @@ export namespace Server {
           return c.json(true)
         },
       )
+      // REMOVED: Share feature disabled for privacy
       .post(
         "/session/:sessionID/share",
         describeRoute({
-          summary: "Share session",
-          description: "Create a shareable link for a session, allowing others to view the conversation.",
+          summary: "Share session (disabled)",
+          description: "Share feature has been disabled in this privacy-hardened build.",
           operationId: "session.share",
           responses: {
-            200: {
-              description: "Successfully shared session",
-              content: {
-                "application/json": {
-                  schema: resolver(Session.Info),
-                },
-              },
+            501: {
+              description: "Feature not available",
             },
-            ...errors(400, 404),
           },
         }),
-        validator(
-          "param",
-          z.object({
-            sessionID: z.string(),
-          }),
-        ),
         async (c) => {
-          const sessionID = c.req.valid("param").sessionID
-          await Session.share(sessionID)
-          const session = await Session.get(sessionID)
-          return c.json(session)
+          return c.json({ error: "Share feature disabled in privacy-hardened build" }, 501)
         },
       )
       .get(
@@ -1044,35 +1030,21 @@ export namespace Server {
           return c.json(result)
         },
       )
+      // REMOVED: Unshare feature disabled for privacy
       .delete(
         "/session/:sessionID/share",
         describeRoute({
-          summary: "Unshare session",
-          description: "Remove the shareable link for a session, making it private again.",
+          summary: "Unshare session (disabled)",
+          description: "Share feature has been disabled in this privacy-hardened build.",
           operationId: "session.unshare",
           responses: {
-            200: {
-              description: "Successfully unshared session",
-              content: {
-                "application/json": {
-                  schema: resolver(Session.Info),
-                },
-              },
+            501: {
+              description: "Feature not available",
             },
-            ...errors(400, 404),
           },
         }),
-        validator(
-          "param",
-          z.object({
-            sessionID: Session.unshare.schema,
-          }),
-        ),
         async (c) => {
-          const sessionID = c.req.valid("param").sessionID
-          await Session.unshare(sessionID)
-          const session = await Session.get(sessionID)
-          return c.json(session)
+          return c.json({ error: "Share feature disabled in privacy-hardened build" }, 501)
         },
       )
       .post(
@@ -2656,13 +2628,9 @@ export namespace Server {
           })
         },
       )
+      // REMOVED: Proxy to app.opencode.ai disabled for privacy
       .all("/*", async (c) => {
-        return proxy(`https://app.opencode.ai${c.req.path}`, {
-          ...c.req,
-          headers: {
-            host: "app.opencode.ai",
-          },
-        })
+        return c.json({ error: "Web UI proxy disabled in privacy-hardened build" }, 404)
       }),
   )
 

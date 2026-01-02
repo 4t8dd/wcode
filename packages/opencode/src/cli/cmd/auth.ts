@@ -229,6 +229,13 @@ export const AuthLoginCommand = cmd({
         UI.empty()
         prompts.intro("Add credential")
         if (args.url) {
+          // REMOVED: External well-known config fetching disabled for privacy
+          prompts.log.error("Well-known auth disabled in privacy-hardened build")
+          prompts.log.info("Use direct API key authentication instead")
+          prompts.outro("Done")
+          return
+
+          /* REMOVED: Well-known auth
           const wellknown = await fetch(`${args.url}/.well-known/opencode`).then((x) => x.json() as any)
           prompts.log.info(`Running \`${wellknown.auth.command.join(" ")}\``)
           const proc = Bun.spawn({
@@ -250,6 +257,7 @@ export const AuthLoginCommand = cmd({
           prompts.log.success("Logged into " + args.url)
           prompts.outro("Done")
           return
+          */
         }
         await ModelsDev.refresh().catch(() => {})
 

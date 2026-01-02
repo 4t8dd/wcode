@@ -181,6 +181,138 @@ The following commands are disabled and will return errors:
 4. **Network Isolation:** Only connections made are to your configured AI providers
 5. **Manual Updates Only:** You control when and how updates are applied
 
+## 🔐 Self-Signed Certificate Configuration
+
+If your internal AI services use self-signed certificates, you need to configure certificate trust.
+
+### Option 1: Environment Variable (Recommended)
+
+**Bash/Zsh:**
+```bash
+# Point to your company's CA certificate
+export NODE_EXTRA_CA_CERTS="/path/to/company-ca-bundle.pem"
+
+# Make it permanent
+echo 'export NODE_EXTRA_CA_CERTS="/path/to/company-ca-bundle.pem"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Fish shell:**
+```fish
+# Point to your company's CA certificate
+set -x NODE_EXTRA_CA_CERTS /path/to/company-ca-bundle.pem
+
+# Make it permanent
+set -Ux NODE_EXTRA_CA_CERTS /path/to/company-ca-bundle.pem
+```
+
+### Option 2: System Trust Store (Production)
+
+**macOS:**
+```bash
+# Add CA certificate to system keychain
+sudo security add-trusted-cert \
+  -d -r trustRoot \
+  -k /Library/Keychains/System.keychain \
+  /path/to/company-ca.crt
+
+# Verify
+security find-certificate -c "Your Company CA" /Library/Keychains/System.keychain
+```
+
+**Linux (Ubuntu/Debian):**
+```bash
+# Copy certificate to CA directory
+sudo cp /path/to/company-ca.crt /usr/local/share/ca-certificates/
+
+# Update CA trust store
+sudo update-ca-certificates
+
+# Verify
+ls -la /etc/ssl/certs/ | grep company
+```
+
+**Linux (RHEL/CentOS/Fedora):**
+```bash
+# Copy certificate to anchors
+sudo cp /path/to/company-ca.crt /etc/pki/ca-trust/source/anchors/
+
+# Update CA trust
+sudo update-ca-trust extract
+
+# Verify
+trust list | grep "Your Company"
+```
+
+### Configure Internal OpenAI-Compatible Endpoint
+
+**Bash/Zsh:**
+```bash
+# 1. Set CA certificate
+export NODE_EXTRA_CA_CERTS="/path/to/company-ca.pem"
+
+# 2. Configure provider
+mkdir -p ~/.config/opencode
+cat > ~/.config/opencode/opencode.json <<EOF
+{
+  "provider": {
+    "openai": {
+      "options": {
+        "baseURL": "https://internal-ai.company.com/v1"
+      }
+    }
+  }
+}
+EOF
+
+# 3. Add API key
+export OPENAI_API_KEY="your-internal-key"
+
+# 4. Test
+opencode models openai
+```
+
+**Fish shell:**
+```fish
+# 1. Set CA certificate
+set -Ux NODE_EXTRA_CA_CERTS /path/to/company-ca.pem
+
+# 2. Configure provider
+mkdir -p ~/.config/opencode
+echo '{
+  "provider": {
+    "openai": {
+      "options": {
+        "baseURL": "https://internal-ai.company.com/v1"
+      }
+    }
+  }
+}' > ~/.config/opencode/opencode.json
+
+# 3. Add API key
+set -Ux OPENAI_API_KEY your-internal-key
+
+# 4. Test
+opencode models openai
+```
+
+### Troubleshooting Certificates
+
+```bash
+# Test certificate with curl first
+curl --cacert /path/to/company-ca.pem https://internal-ai.company.com/v1/models
+
+# Verify Bun respects the environment variable
+bun --version
+
+# Temporary workaround for testing (UNSAFE - do not use in production)
+# Bash/Zsh:
+export NODE_TLS_REJECT_UNAUTHORIZED=0
+
+# Fish:
+set -x NODE_TLS_REJECT_UNAUTHORIZED 0
+```
+
 ## 📚 Additional Documentation
 
 For general OpenCode usage, see the main README.md.

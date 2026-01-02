@@ -14,6 +14,10 @@
   <a href="https://github.com/sst/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/sst/opencode/publish.yml?style=flat-square&branch=dev" /></a>
 </p>
 
+> **🔒 Privacy-Hardened Build**
+> This is a privacy-hardened fork with all external data collection removed for secure internal deployment.
+> See [PRIVACY.md](PRIVACY.md) for details on what has been removed and what remains functional.
+
 [![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
 
 ---

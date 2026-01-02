@@ -71,9 +71,18 @@ const cli = yargs(hideBin(process.argv))
     process.env.AGENT = "1"
     process.env.OPENCODE = "1"
 
+    // Privacy-hardened build banner
+    if (!process.argv.includes("--help") && !process.argv.includes("--version")) {
+      console.error("🔒 OpenCode Privacy-Hardened Build")
+      console.error("   External data collection: DISABLED")
+      console.error("   All standard AI providers: ENABLED")
+      console.error("")
+    }
+
     Log.Default.info("opencode", {
       version: Installation.VERSION,
       args: process.argv.slice(2),
+      build: "privacy-hardened",
     })
   })
   .usage("\n" + UI.logo())

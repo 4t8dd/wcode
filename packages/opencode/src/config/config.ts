@@ -58,8 +58,9 @@ export namespace Config {
     for (const [key, value] of Object.entries(auth)) {
       if (value.type === "wellknown") {
         process.env[value.key] = value.token
-        const wellknown = (await fetch(`${key}/.well-known/opencode`).then((x) => x.json())) as any
-        result = mergeConfigWithPlugins(result, await load(JSON.stringify(wellknown.config ?? {}), process.cwd()))
+        // REMOVED: External well-known config fetching disabled for privacy
+        // const wellknown = (await fetch(`${key}/.well-known/opencode`).then((x) => x.json())) as any
+        // result = mergeConfigWithPlugins(result, await load(JSON.stringify(wellknown.config ?? {}), process.cwd()))
       }
     }
 

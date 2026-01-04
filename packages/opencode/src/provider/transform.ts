@@ -75,6 +75,30 @@ export namespace ProviderTransform {
       return result
     }
 
+    // Fix for OpenAI-compatible providers (like Dataiku DSS):
+    // Remove trailing assistant tool calls when there are no following tool results
+    if (model.api.npm === "@ai-sdk/openai-compatible" || model.providerID.includes("openai")) {
+      const lastMsg = msgs[msgs.length - 1]
+      if (
+        lastMsg &&
+        lastMsg.role === "assistant" &&
+        Array.isArray(lastMsg.content) &&
+        lastMsg.content.some((part: any) => part.type === "tool-call")
+      ) {
+        // Since this is the last message, there cannot be any following tool results
+        // Filter out tool-call parts to prevent "assistant role in final position" error
+        const filteredContent = lastMsg.content.filter((part: any) => part.type !== "tool-call")
+
+        // Only modify if we have other content after filtering
+        if (filteredContent.length > 0) {
+          msgs = [...msgs.slice(0, -1), { ...lastMsg, content: filteredContent }]
+        } else {
+          // If all content was tool calls, remove the entire message
+          msgs = msgs.slice(0, -1)
+        }
+      }
+    }
+
     if (
       model.capabilities.interleaved &&
       typeof model.capabilities.interleaved === "object" &&
